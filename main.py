@@ -4,6 +4,7 @@ from selenium import webdriver
 from tkinter import messagebox
 import loginData
 import web_followers
+import web_followers_db
 from tkinter import *
 from tkinter import ttk
 
@@ -38,7 +39,7 @@ def on_deniedWord_click(event):
     deniedWord.config(fg='black')
 
 
-def mainStart(keyword, reply, deniedWord, progress_label2,followFlag,loveFlag):
+def mainStart(keyword, reply, deniedWord, progress_label2, followFlag, loveFlag):
     options = webdriver.ChromeOptions()
     options.add_argument(
         '--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.134 Safari/537.36')
@@ -51,7 +52,7 @@ def mainStart(keyword, reply, deniedWord, progress_label2,followFlag,loveFlag):
     #     keyword = keyword.replace(" ", "")
     #     web_followers.workStart(keyword, reply, deniedWord)
 
-    web_followers.workStart(keyword, reply, deniedWord, driver,followFlag,loveFlag)
+    web_followers_db.workStart(keyword, reply, deniedWord, driver, followFlag, loveFlag)
     driver.quit()
     print("[작업 완료] - 자동화 프로그램 동작이 완료되었습니다.")
 
@@ -124,7 +125,7 @@ def btncmd():
     # print(e.get())
     # print(chkvar.get()) # 0 : 체크 해제, 1 : 체크
     # print(chkvar2.get())
-    btn.config(state="disabled")
+
     getid = id.get("1.0", END)
     getpwd = pwd.get("1.0", END)
     getAccount = toAccount.get("1.0", END)
@@ -160,12 +161,14 @@ def btncmd():
     deniedWord.delete("1.0", END)
     reply.delete("1.0", END)
     # e.delete(0, END) btn.config(state="disabled")
+
     progress_label2 = Label(root, text="작업 진행 중...")
     progress_label2.grid(row=5, column=1, pady=10)  #
+    btn.config(state="disabled")
 
     def long_task():
-        mainStart(getAccount, refuseReply, refusedWord, progress_label2,followFlag,loveFlag)
-        root.after(0, lambda:handle_result(progress_label2))
+        mainStart(getAccount, refuseReply, refusedWord, progress_label2, followFlag, loveFlag)
+        root.after(0, lambda: handle_result(progress_label2))
 
     threading.Thread(target=long_task).start()
     # progress.stop()
