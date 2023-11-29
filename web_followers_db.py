@@ -33,8 +33,13 @@ conn = pymysql.connect(
 cursor = conn.cursor()
 
 
-def login(driver):
+def login(driver,keyword):
     current_time = datetime.now()
+    startlogSql= "INSERT INTO tb_time_log (start_time,user_id,keyword) VALUES (%s, %s, %s)"
+    cursor.execute(startlogSql,(current_time,loginData.id,keyword.strip()))
+    conn.commit()
+    print(startlogSql)
+    print((current_time,loginData.id))
     formatted_time = current_time.strftime("%Y-%m-%d %H:%M")
     with open(f'start_time_{loginData.id.strip()}.txt', "a") as f:
         f.write(f'{formatted_time} start \n')
@@ -56,26 +61,7 @@ def login(driver):
     time.sleep(2)
     btnInput.click()
     time.sleep(6)
-    try:
-        with open(f'account_{loginData.id.strip()}.txt', 'r') as f:
-            f.readline()
-            print(' account_있으니 패스')
-        pass
-    except Exception as e:
-        with open(f'account_{loginData.id.strip()}.txt', 'a') as a:
-            a.write(f'hello!!! {loginData.id.strip()}')
-            print('account_없으니 일단 write')
-        pass
-    try:
-        with open(f'visited_{loginData.id.strip()}.txt', 'r') as f:
-            f.readline()
-            print('visited_있으니 패스')
-            pass
-    except Exception as e:
-        with open(f'visited_{loginData.id.strip()}.txt', 'a') as f:
-            f.write(f'hello!!! {loginData.id.strip()}')
-            print('visited_없으니 일단 write')
-        pass
+
 
 
 '''공개계정인지 비공계 개정인지 체크함'''
@@ -167,10 +153,10 @@ def inputReply(comments, driver):
         time.sleep(random.randrange(2, 5))
         ActionChains(driver).move_to_element(replyInput).click().send_keys(comment).perform()
         replyButtonSelector = 'div[id^="mount_0_0"] > div > div > div.x9f619.x1n2onr6.x1ja2u2z > div > div > div > div.x78zum5.xdt5ytf.x1t2pt76.x1n2onr6.x1ja2u2z.x10cihs4 > div.x9f619.xvbhtw8.x78zum5.x168nmei.x13lgxp2.x5pf9jr.xo71vjh.x1uhb9sk.x1plvlek.xryxfnj.x1c4vz4f.x2lah0s.x1q0g3np.xqjyukv.x1qjc9v5.x1oa3qoh.x1qughib > div.x1gryazu.xh8yej3.x10o80wk.x14k21rp.x17snn68.x6osk4m.x1porb0y > section > main > div > div > div > div.x4h1yfo > div > div.xdj266r.xktsk01.xat24cr.x1d52u69 > section > div > form > div > div._aidp > div'
-        time.sleep(random.randint(2, 5))
+        time.sleep(random.randint(5, 10))
         # time.sleep(random.randint(5,7))
         driver.find_element(By.CSS_SELECTOR, replyButtonSelector).click()
-        time.sleep(random.randint(1, 3))
+        time.sleep(random.randint(2, 10))
         return True
     except Exception as e:
         print('댓글 달기 막아놓음 --> 다음 계정으로 이동합니다')
@@ -415,7 +401,7 @@ def secondLinks(reply, deniedWord, driver, followFlag, loveFlag, keyword):
         visited_account = []
         instaArr = []
         linkArr= []
-        visitedSql = 'select ACCOUNT_LINK, INSTA_NAME from tb_visited_account where user_id =%s'
+        visitedSql = 'select CONTENT_LINK, INSTA_NAME from tb_visited_account where user_id =%s'
         cursor.execute(visitedSql,loginData.id.strip())
         while (True):
             row = cursor.fetchone()
@@ -455,7 +441,7 @@ def secondLinks(reply, deniedWord, driver, followFlag, loveFlag, keyword):
                         if followFlag == 1:
                             clickFollowers(driver)
                             print("방문목록에 넣습니다~~")
-                            insertVisitedSql = "INSERT INTO tb_visited_account (ACCOUNT_LINK ,INSTA_NAME, USER_ID , FOLLOW_FROM ,REG_DT) VALUES (%s, %s,%s,%s,now())"
+                            insertVisitedSql = "INSERT INTO tb_visited_account (CONTENT_LINK ,INSTA_NAME, USER_ID , FOLLOW_FROM ,REG_DT) VALUES (%s, %s,%s,%s,now())"
                             cursor.execute(insertVisitedSql, (content[1], instaName,  f'{loginData.id.strip()}', 'follower'))
                             conn.commit()
                             updateSecondLinkSql = 'update tb_second_link set VISITED_YN ="Y" where keyword = %s and user_id = %s and link =%s'
@@ -478,11 +464,17 @@ def secondLinks(reply, deniedWord, driver, followFlag, loveFlag, keyword):
                     pass
 
 def workStart(keyword, reply, deniedWord, driver, followFlag, loveFlag):
-    login(driver)
+
+    login(driver,keyword)
     firstLink(keyword, driver)
     secondLinks(reply, deniedWord, driver, followFlag, loveFlag, keyword)
-    conn.close()
     current_time = datetime.now()
-    formatted_time = current_time.strftime("%Y-%m-%d %H:%M")
-    with open(f'start_time_{loginData.id.strip()}.txt', "a") as f:
-        f.write(f'{formatted_time} end!! \n')
+    # max seq 값 가져오기
+
+    # max seq 값 end_time 업데이트
+    endlogSql= "UPDATE tb_time_log SET end_time= %s where keyword =%s"
+    cursor.execute(endlogSql,(current_time,keyword.strip()))
+    conn.commit()
+    print(endlogSql)
+    print((current_time,loginData.id))
+    conn.close()
