@@ -406,9 +406,9 @@ def secondLinks(reply, deniedWord, driver , followFlag,loveFlag):
                     replyFlag = inputReply(comments, driver)
                     # 댓글달기 성공했을 시에
                     if replyFlag:
-                        if loveFlag ==1:
+                        if loveFlag == 1:
                             loveClick(driver)
-                        if followFlag ==1:
+                        if followFlag == 1:
                             clickFollowers(driver)
                             print("방문목록에 넣습니다~~")
                             with open(f'visited_{loginData.id.strip()}.txt', "a") as a:
