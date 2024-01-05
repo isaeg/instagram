@@ -17,7 +17,7 @@ if getattr(sys, 'frozen', False):
 elif __file__:
     application_path = os.path.dirname(__file__)
 
-MY_API_KEY = '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'  # 노출되면 안됨, 각자의 방법으로 보호하자.
+MY_API_KEY = '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'  # 노출되면 안됨, 각자의 방법으로 보호하자.
 res = requests.get(f"{API_SERVER_URL}/releases/latest", auth=(OWNER, MY_API_KEY))  #
 if res.status_code != 200:
     print(datetime.now().strftime("%Y.%m.%d %H:%M:%S"), "업데이트 체크 실패")
