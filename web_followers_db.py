@@ -41,8 +41,6 @@ def login(driver,keyword):
     print(startlogSql)
     print((current_time,loginData.id))
     formatted_time = current_time.strftime("%Y-%m-%d %H:%M")
-    with open(f'start_time_{loginData.id.strip()}.txt', "a") as f:
-        f.write(f'{formatted_time} start \n')
     driver.get("https://www.instagram.com/")
     loginIdSelector = '#loginForm > div > div:nth-child(1) > div > label > input'
     # 3초동안 기다려봐용
@@ -61,7 +59,6 @@ def login(driver,keyword):
     time.sleep(2)
     btnInput.click()
     time.sleep(6)
-
 
 
 '''공개계정인지 비공계 개정인지 체크함'''
