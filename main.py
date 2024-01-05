@@ -38,7 +38,7 @@ if getattr(sys, 'frozen', False):
 elif __file__:
     application_path = os.path.dirname(__file__)
 
-MY_API_KEY = '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'  # 노출되면 안됨, 각자의 방법으로 보호하자.
+MY_API_KEY = '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'  # 노출되면 안됨, 각자의 방법으로 보호하자.
 res = requests.get(f"{API_SERVER_URL}/releases/latest", auth=(OWNER, MY_API_KEY))  #
 if res.status_code != 200:
     print(datetime.now().strftime("%Y.%m.%d %H:%M:%S"), "업데이트 체크 실패")
@@ -90,13 +90,12 @@ def on_reply_click(event):
     reply.delete("1.0", END)
     reply.config(fg='black')
 
-
 def on_deniedWord_click(event):
     deniedWord.delete("1.0", END)
     deniedWord.config(fg='black')
 
 
-def mainStart(keyword, reply, deniedWord, progress_label2, followFlag, loveFlag):
+def mainStart(keyword, reply, deniedWord, progress_label2, followFlag, loveFlag,getCount):
     options = webdriver.ChromeOptions()
     options.add_argument(
         '--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.134 Safari/537.36')
@@ -109,7 +108,8 @@ def mainStart(keyword, reply, deniedWord, progress_label2, followFlag, loveFlag)
     #     keyword = keyword.replace(" ", "")
     #     web_followers.workStart(keyword, reply, deniedWord)
 
-    web_followers_db.workStart(keyword, reply, deniedWord, driver, followFlag, loveFlag)
+    web_followers_db.workStart(keyword, reply, deniedWord, driver, followFlag, loveFlag,getCount)
+    # web_followers.workStart(keyword, reply, deniedWord, driver,followFlag,loveFlag)
     driver.quit()
     print("[작업 완료] - 자동화 프로그램 동작이 완료되었습니다.")
 
@@ -122,6 +122,7 @@ def btncmd():
     print(toAccount.get("1.0", END))  # 1 : 첫번째 라인, 0 : 0번째 column 위치
     print(reply.get("1.0", END))  # 1 : 첫번째 라인, 0 : 0번째 column 위치
     print(deniedWord.get("1.0", END))  # 1 : 첫번째 라인, 0 : 0번째 column 위치
+    print(toAccount_count.get("1.0", END))  # 1 : 첫번째 라인, 0 : 0번째 column 위치
     print(chkvar.get(), type(chkvar.get()))
     print(chkvar2.get(), type(chkvar2.get()))
     # print(e.get())
@@ -141,6 +142,7 @@ def btncmd():
 
     followFlag = chkvar.get()
     loveFlag = chkvar2.get()
+    getCount = int(toAccount_count.get("1.0", END))
     if getid.strip() == default_id or not getid.strip():
         messagebox.showinfo("경고", "계정을 입력하세요")
         return
@@ -160,6 +162,7 @@ def btncmd():
     id.delete("1.0", END)
     pwd.delete("1.0", END)
     toAccount.delete("1.0", END)
+    toAccount_count.delete("1.0", END)
     deniedWord.delete("1.0", END)
     reply.delete("1.0", END)
     # e.delete(0, END) btn.config(state="disabled")
@@ -169,7 +172,7 @@ def btncmd():
     btn.config(state="disabled")
 
     def long_task():
-        mainStart(getAccount, refuseReply, refusedWord, progress_label2, followFlag, loveFlag)
+        mainStart(getAccount, refuseReply, refusedWord, progress_label2, followFlag, loveFlag,getCount)
         root.after(0, lambda: handle_result(progress_label2))
 
     threading.Thread(target=long_task).start()
